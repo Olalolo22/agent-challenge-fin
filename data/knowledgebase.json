@@ -1,0 +1,22 @@
+[
+  {
+    "title": "McKinnon-Shaw Hypothesis (Financial Repression)",
+    "category": "Monetary Theory",
+    "content": "The McKinnon-Shaw hypothesis argues that government intervention in the financial system, such as interest rate ceilings, high inflation, and currency controls, leads to financial repression. This results in negative real interest rates, actively draining purchasing power from savers and misallocating capital."
+  },
+  {
+    "title": "Gurley and Shaw Theory (Financial Intermediation)",
+    "category": "Monetary Theory",
+    "content": "Gurley and Shaw emphasize the role of financial intermediaries (banks) in transferring funds from savers to borrowers. However, in heavily regulated environments with high inflation, traditional intermediaries fail to protect the saver's value, creating a need for alternative disintermediated systems."
+  },
+  {
+    "title": "Time Value of Money & Real Yield",
+    "category": "Corporate Finance",
+    "content": "Real yield is calculated as the nominal yield minus the local inflation rate. If inflation outpaces the nominal bank rate, the saver is experiencing a compounding loss of purchasing power over time, making traditional savings a guaranteed mathematical loss."
+  },
+  {
+    "title": "DeFi as Disintermediation",
+    "category": "Web3 Economics",
+    "content": "Decentralized Finance (DeFi) utilizes smart contracts to completely bypass traditional Gurley-Shaw financial intermediaries. By utilizing permissionless lending protocols on high-throughput networks, savers can escape local financial repression and access globally competitive, inflation-beating yields."
+  }
+]

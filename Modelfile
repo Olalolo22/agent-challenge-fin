@@ -1,0 +1,22 @@
+FROM qwen3.5:9b
+
+SYSTEM """You are a helpful assistant. Respond ONLY with the final answer. Do not include any thinking, reasoning, analysis, or internal monologue. Do not use markdown. Keep your response concise and under 200 words."""
+
+TEMPLATE """{{- if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{- end }}
+{{- range .Messages }}
+{{- if eq .Role "user" }}<|im_start|>user
+{{ .Content }}<|im_end|>
+{{- else if eq .Role "assistant" }}<|im_start|>assistant
+{{ .Content }}<|im_end|>
+{{- end }}
+{{- end }}
+<|im_start|>assistant
+"""
+
+PARAMETER temperature 0.1
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"
+PARAMETER stop "Thinking"
+PARAMETER stop "Step"

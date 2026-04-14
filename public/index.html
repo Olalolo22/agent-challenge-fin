@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantAgent | Wealth Preservation</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #1e293b;
+            --text: #f8fafc;
+            --tradfi-red: #ef4444;
+            --defi-green: #10b981;
+            --accent: #3b82f6;
+        }
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        .subtitle { color: #94a3b8; margin-bottom: 2rem; }
+        
+        .dashboard {
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 2rem;
+        }
+        .panel {
+            flex: 1;
+            background: var(--panel);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 4px solid;
+        }
+        .tradfi-panel { border-color: var(--tradfi-red); }
+        .defi-panel { border-color: var(--defi-green); }
+        
+        .metric { font-size: 2.5rem; font-weight: bold; margin: 1rem 0; }
+        .tradfi-panel .metric { color: var(--tradfi-red); }
+        .defi-panel .metric { color: var(--defi-green); }
+
+        .terminal {
+            width: 100%;
+            max-width: 1000px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 350px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+        .message { margin-bottom: 1rem; line-height: 1.4; }
+        .user-msg { color: var(--accent); }
+        .agent-msg { color: var(--defi-green); }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            max-width: 1000px;
+            flex-wrap: wrap;
+        }
+        input, select {
+            flex: 1;
+            padding: 1rem;
+            background: var(--panel);
+            border: 1px solid #333;
+            color: white;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        button {
+            padding: 1rem 2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        button:hover { background: #2563eb; }
+        button:disabled { background: #475569; cursor: not-allowed; }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+        .badge-defi { background: #10b981; color: black; }
+        .badge-bank { background: #ef4444; color: white; }
+        .badge-warning { background: #f59e0b; color: black; }
+    </style>
+</head>
+<body>
+
+    <h1>QuantAgent Terminal</h1>
+    <div class="subtitle">Decentralized Wealth Preservation Engine (Nosana Hosted)</div>
+
+    <div class="dashboard">
+        <div class="panel tradfi-panel">
+            <h3>TradFi Reality (Bank)</h3>
+            <p>Local Inflation Rate (NGN)</p>
+            <div class="metric" id="inflation">--%</div>
+            <p>Bank Savings Rate</p>
+            <div class="metric" id="bankRate">--%</div>
+            <p>Real Return (Bank)</p>
+            <div class="metric" id="realBank">--%</div>
+        </div>
+        <div class="panel defi-panel">
+            <h3>Web3 Shield (Solana)</h3>
+            <p>DeFi Protocol</p>
+            <div id="protocol" style="font-size:1.2rem; margin-bottom:0.5rem;">--</div>
+            <p>Stablecoin Yield (USDC)</p>
+            <div class="metric" id="defiApy">--%</div>
+            <p>Real Return (DeFi)</p>
+            <div class="metric" id="realDeFi">--%</div>
+        </div>
+    </div>
+
+    <div class="terminal" id="chatBox">
+        <div class="message agent-msg">[SYSTEM] QuantAgent booted. SQLite Knowledge Base active. Awaiting parameters...</div>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="userInput" placeholder="e.g., I have ₦50,000 for a ₦190,000 repair in 12 months" value="">
+        <input type="number" id="timeHorizon" placeholder="Time horizon (months) - optional">
+        <button id="sendBtn" onclick="sendToAgent()">Execute Strategy</button>
+    </div>
+
+    <script>
+        // Load macroeconomic and DeFi data
+        async function loadMacroAndDeFi() {
+            try {
+                const macroRes = await fetch('/api/macro');
+                const macro = await macroRes.json();
+                document.getElementById('inflation').innerText = macro.inflationRate + '%';
+                document.getElementById('bankRate').innerText = macro.bankRate + '%';
+                const realBank = (macro.bankRate - macro.inflationRate).toFixed(2);
+                document.getElementById('realBank').innerHTML = realBank + '%';
+
+                const defiRes = await fetch('/api/defi');
+                const defi = await defiRes.json();
+                document.getElementById('defiApy').innerHTML = defi.apy + '%';
+                document.getElementById('protocol').innerText = defi.protocol;
+                const realDeFi = (defi.apy - macro.inflationRate).toFixed(2);
+                document.getElementById('realDeFi').innerHTML = realDeFi + '%';
+            } catch (e) {
+                console.error('Failed to load data', e);
+                document.getElementById('inflation').innerText = '15.06%';
+                document.getElementById('bankRate').innerText = '11.77%';
+                document.getElementById('realBank').innerHTML = '-3.29%';
+                document.getElementById('defiApy').innerHTML = '8.50%';
+                document.getElementById('protocol').innerText = 'Kamino (fallback)';
+                document.getElementById('realDeFi').innerHTML = '-6.56%';
+            }
+        }
+
+        async function sendToAgent() {
+            const input = document.getElementById('userInput');
+            const horizonInput = document.getElementById('timeHorizon');
+            const chatBox = document.getElementById('chatBox');
+            const btn = document.getElementById('sendBtn');
+            let text = input.value.trim();
+            const horizon = horizonInput.value.trim();
+
+            if (!text) return;
+
+            if (horizon) {
+                text += ` in ${horizon} months`;
+            }
+
+            chatBox.innerHTML += `<div class="message user-msg">> USER: ${text}</div>`;
+            input.value = '';
+            horizonInput.value = '';
+            btn.disabled = true;
+            btn.innerText = "COMPUTING...";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch('/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                if (!response.ok) throw new Error('Server error');
+                const data = await response.json();
+                const reply = data.response || "Strategy generated successfully.";
+                const formattedReply = reply.replace(/\n/g, '<br>');
+                chatBox.innerHTML += `<div class="message agent-msg">> QUANT_AGENT: <br>${formattedReply}</div>`;
+            } catch (error) {
+                console.error(error);
+                chatBox.innerHTML += `<div class="message" style="color:#ef4444;">> SYSTEM ERROR: Cannot connect to backend. Make sure the server is running (bun dev).</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Execute Strategy";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        document.getElementById("userInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendToAgent();
+            }
+        });
+
+        loadMacroAndDeFi();
+    </script>
+</body>
+</html>
