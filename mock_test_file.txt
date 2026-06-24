@@ -1,0 +1,1 @@
+This is a mock file to test the git repository connection. It is completely safe and won't affect any functionality.
